@@ -1,0 +1,4 @@
+name: AxSync
+version: '1.0-SNAPSHOT'
+main: de.jauni.axsync.AxSync
+api-version: '1.21'
