@@ -35,7 +35,14 @@ public class DatabaseManager {
 
     public boolean initDatabaseTables() throws SQLException {
         try(Connection conn = getConnection()){
-            try(PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS playerdata (uuid VARCHAR(255), name VARCHAR(255), health DOUBLE, foodlevel INT)")){
+            try(PreparedStatement ps = conn.prepareStatement("" +
+                    "CREATE TABLE IF NOT EXISTS playerdata " +
+                    "(uuid VARCHAR(255), " +
+                    "name VARCHAR(255), " +
+                    "health DOUBLE, " +
+                    "foodlevel INT, " +
+                    "gamemode ENUM('SURVIVAL', 'CREATIVE', 'SPECTATOR', 'ADVENTURE')" +
+                    ")")){
                 ps.executeUpdate();
                 return true;
             }

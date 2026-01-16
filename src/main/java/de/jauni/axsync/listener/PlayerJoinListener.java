@@ -2,6 +2,7 @@ package de.jauni.axsync.listener;
 
 import de.jauni.axsync.AxSync;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,11 +29,12 @@ public class PlayerJoinListener implements Listener {
             check.setString(1, p.getUniqueId().toString());
             ResultSet rs = check.executeQuery();
             if (!rs.next()) {
-                PreparedStatement fillTable = conn.prepareStatement("INSERT INTO playerdata (uuid, name, health, foodlevel) VALUES (?, ?, ?, ?)");
+                PreparedStatement fillTable = conn.prepareStatement("INSERT INTO playerdata (uuid, name, health, foodlevel, gamemode) VALUES (?, ?, ?, ?, ?)");
                 fillTable.setString(1, p.getUniqueId().toString());
                 fillTable.setString(2, p.getName());
                 fillTable.setDouble(3, p.getHealth());
                 fillTable.setInt(4, p.getFoodLevel());
+                fillTable.setString(5, p.getGameMode().toString());
                 fillTable.executeUpdate();
                 p.setHealth(20.0);
                 p.sendMessage("Spielerdaten wurden erstellt");
@@ -40,9 +42,11 @@ public class PlayerJoinListener implements Listener {
             else{
                 double health = rs.getDouble("health");
                 int foodLevel = rs.getInt("foodlevel");
+                String gameMode = rs.getString("gamemode");
                 p.setHealth(health);
                 p.setFoodLevel(foodLevel);
-                p.sendMessage("Deine Gesundheit und Sättigung wurden geladen.");
+                p.setGameMode(GameMode.valueOf(gameMode));
+                p.sendMessage("Deine Gesundheit + Sättigung + Spielmodus wurden geladen.");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

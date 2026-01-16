@@ -34,4 +34,15 @@ public class PlayerManager {
             throw new RuntimeException(e);
         }
     }
+
+    public void setPlayerGameMode(Player p){
+        try(Connection conn = reference.getDatabaseManager().getConnection()){
+            PreparedStatement ps = conn.prepareStatement("UPDATE playerdata SET gamemode = ? WHERE uuid = ?");
+            ps.setString(1, p.getGameMode().toString());
+            ps.setString(2, p.getUniqueId().toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
