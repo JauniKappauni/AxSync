@@ -44,7 +44,8 @@ public class DatabaseManager {
                     "gamemode ENUM('SURVIVAL', 'CREATIVE', 'SPECTATOR', 'ADVENTURE')" +
                     ", saturation FLOAT," +
                     "level INT," +
-                    "progress FLOAT)")){
+                    "progress FLOAT," +
+                    "airlevel INT)")){
                 ps.executeUpdate();
                 return true;
             }
