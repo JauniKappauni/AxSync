@@ -29,13 +29,15 @@ public class PlayerJoinListener implements Listener {
             check.setString(1, p.getUniqueId().toString());
             ResultSet rs = check.executeQuery();
             if (!rs.next()) {
-                PreparedStatement fillTable = conn.prepareStatement("INSERT INTO playerdata (uuid, name, health, foodlevel, gamemode, saturation) VALUES (?, ?, ?, ?, ?, ?)");
+                PreparedStatement fillTable = conn.prepareStatement("INSERT INTO playerdata (uuid, name, health, foodlevel, gamemode, saturation, level, progress) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 fillTable.setString(1, p.getUniqueId().toString());
                 fillTable.setString(2, p.getName());
                 fillTable.setDouble(3, p.getHealth());
                 fillTable.setInt(4, p.getFoodLevel());
                 fillTable.setString(5, p.getGameMode().toString());
                 fillTable.setFloat(6, p.getSaturation());
+                fillTable.setInt(7, p.getLevel());
+                fillTable.setFloat(8, p.getExp());
                 fillTable.executeUpdate();
                 p.setHealth(20.0);
                 p.sendMessage("Spielerdaten wurden erstellt");
@@ -45,11 +47,15 @@ public class PlayerJoinListener implements Listener {
                 int foodLevel = rs.getInt("foodlevel");
                 String gameMode = rs.getString("gamemode");
                 float saturation = rs.getFloat("saturation");
+                int level = rs.getInt("level");
+                int progress = rs.getInt("progress");
                 p.setHealth(health);
                 p.setFoodLevel(foodLevel);
                 p.setGameMode(GameMode.valueOf(gameMode));
                 p.setSaturation(saturation);
-                p.sendMessage("Deine Gesundheit + Sättigung + Spielmodus wurden geladen.");
+                p.setLevel(level);
+                p.setExp(progress);
+                p.sendMessage("Deine Gesundheit + Sättigung + Spielmodus + Erfahrung wurden geladen.");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
