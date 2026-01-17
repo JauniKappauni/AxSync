@@ -18,5 +18,6 @@ public class PlayerQuitListener implements Listener {
         reference.getPlayerManager().setPlayerHealth(p);
         reference.getPlayerManager().setPlayerFoodLevel(p);
         reference.getPlayerManager().setPlayerGameMode(p);
+        reference.getPlayerManager().setPlayerSaturation(p);
     }
 }

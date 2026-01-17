@@ -42,7 +42,7 @@ public class DatabaseManager {
                     "health DOUBLE, " +
                     "foodlevel INT, " +
                     "gamemode ENUM('SURVIVAL', 'CREATIVE', 'SPECTATOR', 'ADVENTURE')" +
-                    ")")){
+                    ", saturation FLOAT)")){
                 ps.executeUpdate();
                 return true;
             }
