@@ -45,7 +45,8 @@ public class DatabaseManager {
                     ", saturation FLOAT," +
                     "level INT," +
                     "progress FLOAT," +
-                    "airlevel INT)")){
+                    "airlevel INT," +
+                    "inventory TEXT)")){
                 ps.executeUpdate();
                 return true;
             }

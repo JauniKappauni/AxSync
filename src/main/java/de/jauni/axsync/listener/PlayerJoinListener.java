@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +30,7 @@ public class PlayerJoinListener implements Listener {
             check.setString(1, p.getUniqueId().toString());
             ResultSet rs = check.executeQuery();
             if (!rs.next()) {
-                PreparedStatement fillTable = conn.prepareStatement("INSERT INTO playerdata (uuid, name, health, foodlevel, gamemode, saturation, level, progress, airlevel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                PreparedStatement fillTable = conn.prepareStatement("INSERT INTO playerdata (uuid, name, health, foodlevel, gamemode, saturation, level, progress, airlevel, inventory) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 fillTable.setString(1, p.getUniqueId().toString());
                 fillTable.setString(2, p.getName());
                 fillTable.setDouble(3, p.getHealth());
@@ -39,6 +40,7 @@ public class PlayerJoinListener implements Listener {
                 fillTable.setInt(7, p.getLevel());
                 fillTable.setFloat(8, p.getExp());
                 fillTable.setInt(9, p.getRemainingAir());
+                fillTable.setString(10, reference.getPlayerManager().serializeInventory(p.getInventory()));
                 fillTable.executeUpdate();
                 p.setHealth(20.0);
                 p.sendMessage("Spielerdaten wurden erstellt");
@@ -58,9 +60,14 @@ public class PlayerJoinListener implements Listener {
                 p.setLevel(level);
                 p.setExp(progress);
                 p.setRemainingAir(airLevel);
+                reference.getPlayerManager().loadPlayerInventory(p);
                 p.sendMessage("Deine Gesundheit + Sättigung + Spielmodus + Erfahrung + Luftniveau wurden geladen.");
             }
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

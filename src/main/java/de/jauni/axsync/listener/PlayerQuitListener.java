@@ -6,13 +6,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.io.IOException;
+
 public class PlayerQuitListener implements Listener {
     AxSync reference;
     public PlayerQuitListener(AxSync reference){
         this.reference = reference;
     }
     @EventHandler
-    public void onQuit(PlayerQuitEvent event){
+    public void onQuit(PlayerQuitEvent event) throws IOException {
         event.setQuitMessage(null);
         Player p = event.getPlayer();
         reference.getPlayerManager().setPlayerHealth(p);
@@ -21,5 +23,6 @@ public class PlayerQuitListener implements Listener {
         reference.getPlayerManager().setPlayerSaturation(p);
         reference.getPlayerManager().setPlayerExperience(p);
         reference.getPlayerManager().setPlayerAirLevel(p);
+        reference.getPlayerManager().setPlayerInventory(p);
     }
 }

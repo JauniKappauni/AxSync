@@ -2,10 +2,19 @@ package de.jauni.axsync.manager;
 
 import de.jauni.axsync.AxSync;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Base64;
 
 public class PlayerManager {
     AxSync reference;
@@ -77,6 +86,56 @@ public class PlayerManager {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void setPlayerInventory(Player p) throws IOException {
+        String serializedInv = serializeInventory(p.getInventory());
+        try(Connection conn = reference.getDatabaseManager().getConnection()){
+            PreparedStatement ps = conn.prepareStatement("UPDATE playerdata SET inventory = ? WHERE uuid = ?");
+            ps.setString(1, serializedInv);
+            ps.setString(2, p.getUniqueId().toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String serializeInventory(PlayerInventory inv) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try(BukkitObjectOutputStream boos = new BukkitObjectOutputStream(baos)){
+            boos.writeInt(inv.getSize());
+            for(ItemStack item : inv.getContents()){
+                boos.writeObject(item);
+            }
+        }
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
+    }
+
+    public void loadPlayerInventory(Player p) throws SQLException, IOException, ClassNotFoundException {
+        try(Connection conn = reference.getDatabaseManager().getConnection()){
+            PreparedStatement ps = conn.prepareStatement("SELECT inventory FROM playerdata WHERE uuid = ?");
+            ps.setString(1, p.getUniqueId().toString());
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                String data = rs.getString("inventory");
+                if(data != null){
+                    deserializeInventory(p.getInventory(), data);
+                }
+            }
+        }
+    }
+
+    public void deserializeInventory(PlayerInventory inv, String data) throws IOException, ClassNotFoundException {
+        byte[] bytes = Base64.getDecoder().decode(data);
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        try(BukkitObjectInputStream bois = new BukkitObjectInputStream(bais)){
+            int size = bois.readInt();
+            ItemStack[] items = new ItemStack[size];
+            for(int i = 0; i < size; i++){
+                items[i] = (ItemStack) bois.readObject();
+            }
+            inv.setContents(items);
         }
     }
 }
