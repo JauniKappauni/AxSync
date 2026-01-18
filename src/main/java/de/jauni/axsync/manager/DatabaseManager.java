@@ -46,7 +46,8 @@ public class DatabaseManager {
                     "level INT," +
                     "progress FLOAT," +
                     "airlevel INT," +
-                    "inventory TEXT)")){
+                    "inventory TEXT," +
+                    "enderchest TEXT)")){
                 ps.executeUpdate();
                 return true;
             }
